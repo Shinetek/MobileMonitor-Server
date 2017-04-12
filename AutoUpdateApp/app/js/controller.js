@@ -84,7 +84,7 @@
                     // });
                     (function (i) {                
                         return  Upload.upload({                  
-                            url:   'http://localhost:4102/api/uploading',
+                            url:   'http://123.56.135.196:4102/api/uploading',
                             fields:  {
                                 'username':  $scope.username
                             },
@@ -100,7 +100,7 @@
                             console.log('progress: '  +  progressPercentage  +  '% '  +  evt.config.file.name);              
                         }).success(function  (data,  status,  headers,  config)  {                
                             $scope.showProgress  =  true;
-                            self.selectedAPKModule.filePath = data;
+                            self.selectedAPKModule.filePath = data.url;
                             console.log('file '  +  config.file.name  +  'uploaded. Response: ',  data);                
                             console.log("size:"  +  (config.file.size / 1000).toFixed(2)); //一个文件上传成功
                         });            

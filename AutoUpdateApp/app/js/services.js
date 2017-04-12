@@ -20,11 +20,11 @@
         return services;
 
         function _submitRelease(module, successFn, errorFn) {
-            $http.post("http://localhost:4102/api/release", module).success(successFn).error(errorFn);
+            $http.post("http://123.56.135.196:4102/api/release", module).success(successFn).error(errorFn);
         }
 
         function _getAPKList(successFn, errorFn) {
-            $http.get("http://localhost:4102/api/release").success(successFn).error(errorFn);
+            $http.get("http://123.56.135.196:4102/api/release").success(successFn).error(errorFn);
         }
     }
 
