@@ -1,0 +1,8 @@
+# Created by .ignore support plugin (hsz.mobi)
+.idea
+.test
+typings
+typings.json
+jsconfig.json
+node_modules
+bower_components

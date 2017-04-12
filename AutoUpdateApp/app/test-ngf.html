@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style type="text/css">
+        .button {
+            -moz-appearance: button;
+            /* Firefox */
+            -webkit-appearance: button;
+            /* Safari and Chrome */
+            padding: 10px;
+            margin: 10px;
+            width: 70px;
+        }
+        .drop-box {
+            background: #F8F8F8;
+            border: 5px dashed #DDD;
+            width: 200px;
+            height: 65px;
+            text-align: center;
+            padding-top: 25px;
+            margin: 10px;
+        }
+        .dragover {
+            border: 5px dashed blue;
+        }
+    </style>
+</head>
+<body>
+<div ng-app="fileUpload" ng-controller="MyCtrl">
+    Username
+    <input type="text" ng-model="username"><br/><br/>
+    watching model:
+    <div class="button" ngf-select ng-model="file" ngf-multiple="false">Select File</div>
+    on file change multiple:
+    <div class="button" ngf-select="upload($files)" ngf-multiple="true">Select File</div>
+    Drop File:
+    <div ngf-drop ngf-select ng-model="files" class="drop-box"
+         ngf-drag-over-class="'dragover'" ngf-multiple="true" ngf-allow-dir="true"
+         jy="image/*,application/pdf"
+         ngf-pattern="'image/*,application/pdf'">Drop pdfs or images here or click to upload
+    </div>
+    <div ngf-no-file-drop>File Drag/Drop is not supported for this browser</div>
+    Files:
+    <ul>
+        <li ng-repeat="f in files" style="font:smaller">{{f.name}} {{f.$error}} {{f.$errorParam}}</li>
+    </ul>
+    Upload Log:
+    <pre>{{log}}</pre>
+</div>
+</div>
+
+
+
+<script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
+<script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="bower_components/summernote/dist/summernote.min.js"></script>
+<script type="text/javascript" src="bower_components/angular/angular.min.js"></script>
+<script type="text/javascript" src="bower_components/moment/min/moment.min.js"></script>
+<script type="text/javascript" src="bower_components/ng-file-upload/ng-file-upload-shim.min.js"></script>
+<script type="text/javascript" src="bower_components/ng-file-upload/ng-file-upload.min.js"></script>
+
+<script type="text/javascript" src="js/test.js"></script>
+</body>
+</html>

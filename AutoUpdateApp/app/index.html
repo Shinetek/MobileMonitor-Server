@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="AutoUpdate">
+<head>
+    <meta charset="UTF-8">
+    <title>移动端在线更新管理平台</title>
+    <link rel="shortcut icon" href="./publics/download.ico">
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/app.css">
+</head>
+<body ng-controller="MainController as Ctrl" data-ng-init="Ctrl.initData()">
+<!--导航栏部分-->
+<nav class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <span class="navbar-brand" style="color: #ffffff; font-weight: 500">移动端在线更新管理平台</span>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li ng-class="{'active': Ctrl.isSelectedPageTab('List')}" ng-click="Ctrl.selectPageTab('List')">
+                    <a href>
+                        <span class="glyphicon glyphicon-th-list"></span> 应用列表
+                    </a>
+                </li>
+                <li ng-class="{'active': Ctrl.isSelectedPageTab('Strict')}" ng-click="Ctrl.selectPageTab('Strict')">
+                    <a href>
+                        <span class="glyphicon glyphicon-signal"></span> 更新统计
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="content">
+    <div class="col-8 d-inline-block">
+        <div class="panel-heading toolbar">
+            <a class="toolbar-item" ng-click="Ctrl.showUpdateApkModal(null)">
+                <span class="glyphicon glyphicon-plus"></span> 添加Apk
+            </a>
+        </div>
+        <div class="repo-list">
+            <li class="col-12 d-block py-4 border-bottom" style="position: relative" ng-repeat="apkModule in Ctrl.apkModuleList">
+                <div class="d-inline-block mb-1">
+                    <h3>
+                        <a itemprop="name codeRepository">{{apkModule.name}}</a>
+                    </h3>
+                </div>
+                <div>
+                    <!--<p class="col-8 d-inline-block ">{{apkModule.content}}</p>-->
+                    <p class="col-8 d-inline-block ">{{apkModule.title}}</p>
+                </div>
+                <div class="f6 text-gray mt-2">
+                    <a class="muted-link mr-3" href>
+                        <span class="glyphicon glyphicon-tags mr-1"></span> {{apkModule.tags.length}}
+                    </a>
+                    <span class="ml-3">Updated {{apkModule.tags | getUpdatedTime}}</span>
+                </div>
+                <a class="pull-apk-button" ng-click="Ctrl.showUpdateApkModal(apkModule)">
+                    <img width="24px" height="24px" src="./publics/upload.ico"/>
+                </a>
+            </li>
+        </div>
+    </div>
+    <div class="col-4 float-right pl-4">
+
+    </div>
+</div>
+
+<!--创建或更新apk模态框 start-->
+<div class="modal fade" id="updateApkModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <div class="form-group">
+                    <input class="form" style="width: 130px" required="required" type="text" placeholder="应用名称" ng-model="Ctrl.selectedAPKModule.name"/>
+                    <div class="release-target-wrapper">
+                        @
+                        <input class="form d-inline-block ml-1" style="width: 130px" required="required" type="text"
+                               placeholder="版本号" ng-model="Ctrl.selectedAPKModule.version" list="version"/>
+                        <datalist id="version">
+                            <option ng-repeat="tag in Ctrl.selectedAPKModule.tags" value="{{tag.version}}"></option>
+                        </datalist>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-left: 0px">
+                    <input class="form d-inline-block" style="width: 330px" required="required" type="text"
+                           placeholder="version title" ng-model="Ctrl.selectedAPKModule.title"/>
+                </div>
+                <div class="form-group">
+                    <ul class="nav nav-tabs">
+                        <li role="presentation" class="active"><a href>Write</a></li>
+                        <li role="presentation"><a href>Preview</a></li>
+                    </ul>
+                    <div class="write-content upload-enabled">
+                        <textarea tabindex="5" class="form" placeholder="对这个版本进行描述" ng-model="Ctrl.selectedAPKModule.content"></textarea>
+                    </div>
+                </div>
+                <ul class="uploaded-files is-populated">
+                    <li ng-repeat="file in Ctrl.uploadFiles">
+                        <div class="progress" ng-hide="file.progressPercentage === 100">
+                            <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="{{file.progressPercentage}}"
+                                 aria-valuemin="0" aria-valuemax="100" style="width: {{file.progressPercentage}}%">
+                                 <span class="sr-only">{{file.progressPercentage}}% Complete</span>
+                            </div>
+                        </div>
+                        <div style="position: relative" ng-show="file.progressPercentage === 100">                            
+                            <p>{{file.name}}</p>
+                            <span class="glyphicon glyphicon-ok" style="position: absolute; right:10px; top:5px; color:#00FF66"></span>                             
+                        </div>                      
+                    </li>
+                </ul>
+                <div class="drop-target drop-box" ngf-drop ngf-select ng-model="files" drag-over-class="dragover"
+                     ngf-multiple="true" ngf-accept="'.apk'" ngf-pattern="'.apk'">
+                    <div class="drag-and-drop d-flex flex-justify-center flex-items-center">
+                        <span class="default">
+                            Attach binaries by dropping them here or selecting them.
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button tabindex="6" class="btn btn-primary" data-disable-with="Publishing…" ng-click="Ctrl.submitRelease()">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--创建或更新apk模态框 end-->
+
+<script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
+<script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="bower_components/summernote/dist/summernote.min.js"></script>
+<script type="text/javascript" src="bower_components/angular/angular.min.js"></script>
+<script type="text/javascript" src="bower_components/moment/min/moment.min.js"></script>
+<script type="text/javascript" src="bower_components/ng-file-upload/ng-file-upload-shim.min.js"></script>
+<script type="text/javascript" src="bower_components/ng-file-upload/ng-file-upload.min.js"></script>
+
+<script type="text/javascript" src="js/module.js"></script>
+<script type="text/javascript" src="js/config.js"></script>
+<script type="text/javascript" src="js/controller.js"></script>
+<script type="text/javascript" src="js/services.js"></script>
+<script type="text/javascript" src="js/filter.js"></script>
+</body>
+</html>

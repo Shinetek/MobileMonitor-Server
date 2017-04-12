@@ -1,0 +1,22 @@
+{
+  "name": "autoupdateapp",
+  "version": "0.0.1",
+  "description": "auto update app",
+  "main": "autoUpdateApp.js",
+  "dependencies": {
+    "body-parser": "^1.17.1",
+    "express": "^4.15.2",
+    "lodash": "^4.17.4",
+    "mongoose": "^4.9.2",
+    "morgan": "^1.8.1",
+    "multiparty": "^4.1.3",
+    "on-finished": "^2.3.0",
+    "restify": "^4.3.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "test"
+  },
+  "author": "fantasylin",
+  "license": "ISC"
+}
