@@ -21,7 +21,9 @@
             /*版本描述*/
             content: {type: String},
             /*apk存放路径*/
-            filePath: {type: String}
+            filePath: {type: String},
+            /*文件大小*/
+            size: {type: Number}
         }]
     });
     ApkSchema.methods.initData = function (body) {
@@ -33,7 +35,8 @@
             version: body.version,
             varDate: body.varDate,
             content: body.content,
-            filePath: body.filePath
+            filePath: body.filePath,
+            size: body.size
         });
     };
     module.exports = mongoose.model('AndroidPackage', ApkSchema)

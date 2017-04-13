@@ -78,7 +78,8 @@
             if (versionList[0].version > version) {
                 return res.end(JSON.stringify({
                     latestVersion: versionList[0].version,
-                    path: "http://123.56.135.196:4102" + versionList[0].filePath
+                    path: "http://123.56.135.196:4102" + versionList[0].filePath,
+                    size: versionList[0].size
                 }));
             } else {
                 return res.end(JSON.stringify({
@@ -137,7 +138,8 @@
                             version: body.version,
                             varDate: body.varDate,
                             content: body.content,
-                            filePath: body.filePath
+                            filePath: body.filePath,
+                            size: body.size
                         }
                     }
                 }, function (err) {

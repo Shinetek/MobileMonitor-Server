@@ -82,6 +82,7 @@
                     //     progressPercentage: 0,
                     //     name: item.name
                     // });
+                    self.selectedAPKModule.size += file.size;
                     (function (i) {                
                         return  Upload.upload({                  
                             url:   'http://123.56.135.196:4102/api/uploading',
@@ -91,7 +92,7 @@
                             file:  file              
                         }).progress(function  (evt)  {                
                             $scope.showProgress  =  true;                
-                            var  progressPercentage  =  parseInt(100.0  *  evt.loaded  /  evt.total); //上传百分比
+                            var  progressPercentage  =  parseInt(100.0  *  evt.loaded  /  evt.total); //上传百分比                            
                             for (var i = 0; i < self.uploadFiles.length; i++) {
                                 if (self.uploadFiles[i].name === evt.config.file.name) {
                                     self.uploadFiles[i].progressPercentage  = progressPercentage;
@@ -118,6 +119,7 @@
             apkModule.varDate = self.selectedAPKModule.varDate;
             apkModule.content = self.selectedAPKModule.content;
             apkModule.filePath = self.selectedAPKModule.filePath;
+            apkModule.size = self.selectedAPKModule.size;
             if (self.selectedAPKModule === null || self.selectedAPKModule.name === undefined || self.selectedAPKModule.name === "") {
                 alert("请先填写应用名称");
                 return;
@@ -242,8 +244,10 @@
                 apkModule.varDate = new Date();
                 apkModule.content = "";
                 apkModule.filePath = "";
+                apkModule.size = 0;
             }
             self.selectedAPKModule = apkModule;
+            self.selectedAPKModule.size = 0;
             self.uploadFiles = [];
             updateModal.modal({
                 backdrop: 'static',
