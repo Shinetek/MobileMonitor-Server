@@ -1,0 +1,29 @@
+[{
+  "id":"11",
+  "name":"成像仪",
+  "plan":"284",
+  "present":"157",
+  "succeed":"139",
+  "failed":"16"
+},{
+  "id":"22",
+  "name":"探测仪",
+  "plan":"379",
+  "present":"222",
+  "succeed":"111",
+  "failed":"109"
+},{
+  "id":"33",
+  "name":"闪电仪",
+  "plan":"189",
+  "present":"105",
+  "succeed":"52",
+  "failed":"51"
+},{
+  "id": "44",
+  "name": "轨道确定与预报",
+  "plan": "30",
+  "present": "14",
+  "succeed": "13",
+  "failed": "0"
+}]
