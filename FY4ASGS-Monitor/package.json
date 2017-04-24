@@ -1,0 +1,17 @@
+{
+  "name": "fy4a-sgs",
+  "version": "0.0.1",
+  "description": "",
+  "main": "fy4a-sgs-server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "fantasylin",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.17.1",
+    "express": "^4.15.2",
+    "morgan": "^1.8.1",
+    "on-finished": "^2.3.0"
+  }
+}
