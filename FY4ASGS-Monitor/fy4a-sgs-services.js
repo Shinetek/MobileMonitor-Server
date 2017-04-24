@@ -29,7 +29,11 @@
         next();
     });
 
-    app.use("/", require('./routes/lv1-fastview.js')());
+    app.use("/", require("./routers/apparatus-handler.js")());
+    app.use("/", require("./routers/ground-handler.js")());
+    app.use("/", require("./routers/state-handler.js")());
+    app.use("/", require('./routers/lv1-fastview.js')());
+
 
     //其他一切资源均重定位到 404-未找到
     app.all("*", function (req, res, next) {
