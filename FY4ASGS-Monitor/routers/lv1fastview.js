@@ -56,7 +56,7 @@
 					' was not found on this server.');
 				res.end();
 			} else {
-				var buffer = sharp(filePath).
+				sharp(filePath).
 					resize(1100, 1100).
 					jpeg().
 					toBuffer(function(err, data, info) {
