@@ -52,9 +52,9 @@
         //分系统的设备状态
         require("./routers/subdasstate.js")(server, BASEPATH);
         //分系统的故障状态
-        require("./routers/subsysfault.js")(server, BASEPATH);
-
-
+        require("./routers/subsysfault.js")(server, BASEPATH);  
+        //1级数据图像获取
+        require("./routers/lv1fastview.js")(server, BASEPATH);
 
         server.listen(HTTP_PORT, function(){
            console.log("%s listening at %s", server.name, server.url);
