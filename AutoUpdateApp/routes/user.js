@@ -18,6 +18,7 @@
         var router = new Router();
         router.route("/autoupdate").get(_autoUpdate);
         router.route("/api/uploading").post(_uploading);
+	    router.route('/setup').get(_setupApp);
         router.route("/api/release").post(_submitRelease);
         router.route("/api/release").get(_getApkList);
         router.route("/api/updating").get(_updatingRelease);
@@ -87,7 +88,7 @@
                     path: ""
                 }));
             }
-        })
+        });
     }
 
     function _getApkList(req, res, next) {
@@ -196,5 +197,52 @@
     function _autoUpdate(req, res, next) {
         res.sendfile("app/index.html");
     }
+
+	function _setupApp(req, res, next) {
+		var apkName = req.query["name"];
+		ApkSchema.find({
+			name: apkName
+		}, function (err, doc) {
+			if (err) {
+				return next(new Error(err.stack));
+			}
+			if (doc.length === 0) {
+				return res.end();
+			}
+			var versionList = doc[0].tags;
+			versionList.sort(function (a, b) {
+				return b.version > a.version;
+			});
+			var filePath = ".." + versionList[0].filePath;
+			filePath = path.join(__dirname, filePath);
+			fs.exists(filePath, function (existFlg) {
+				if (!existFlg) {
+					res.writeHead(404, {
+						'Content-Type': 'text/plain'
+					});
+					res.write("This request URL " + req.url + " was not found on this server.");
+					res.end();
+				} else {
+					fs.readFile(filePath, "binary", function (err, file) {
+						if (err) {
+							res.writeHead(500, {
+								'Content-Type': 'text/plain'
+							});
+							res.end(err);
+						} else {
+							res.writeHead(200, {
+								'Content-Type': 'application/vnd.android.package-archive',
+								'Content-Disposition': 'attachment; filename=' + apkName + '.apk'
+							});
+							res.write(file, "binary");
+							res.end();
+						}
+					});
+
+				}
+			});
+
+		});
+	}
 
 })();
