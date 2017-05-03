@@ -30,7 +30,7 @@
         });
 
         //连接失败
-        mongoose.connection.on("error", function(){
+        mongoose.connection.on("error", function(err){
            console.log("Mongoose connection error" + err);
         });
     })();

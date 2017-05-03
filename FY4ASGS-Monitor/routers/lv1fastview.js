@@ -14,7 +14,7 @@
 		/**
 		 * @param {String} taskid 任务编号
 		 * @param {String} btime 任务开始时间
-		 * @param {String} etime 任务结束时间
+		 * @param {String} thum 是否缩略  0=false 1=true
 		 */
 		server.get({
 			path: '/fastview/lv1/:satid/:inst/:chnl/:resolution',
@@ -30,7 +30,7 @@
 		var resolution = req.params['resolution'];
 		var taskID = req.params['taskid'];
 		var bTime = req.params['btime'];
-		var eTime = req.params['etime'];
+		var thumFlg = req.params['thum'];
 
 		while (satID.length < 5) {
 			satID += '-';
@@ -41,7 +41,7 @@
 		}
 		console.log(inst);
 		var filePath = satID + '_' + inst + '_' + 'N_DISK_0995E_L1A_GEO-'
-			+ '_' + chnl + '_' + 'NUL' + '_' + bTime + '_' + eTime + '_' +
+			+ '_' + chnl + '_' + 'NUL' + '_' + bTime + '_' +
 			resolution + '_' + '00000' + '_' + taskID + '.JPG';
 
 		var filePath = path.join('/shinetek/fy4mcs', filePath);
@@ -56,8 +56,14 @@
 					' was not found on this server.');
 				res.end();
 			} else {
+				var w = 1100;
+				var h = 1100;
+				if (thumFlg === "1") {
+					w = 100;
+					h = 100;
+				}
 				sharp(filePath).
-					resize(1100, 1100).
+					resize(w, h).
 					jpeg().
 					toBuffer(function(err, data, info) {
 						res.writeHead(200, {
@@ -66,20 +72,6 @@
 						res.write(data);
 						res.end();
 					});
-				// fs.readFile(filePath, function(err, file) {
-				// 	if (err) {
-				// 		res.writeHead(500, {
-				// 			'Content-Type': 'text/plain',
-				// 		});
-				// 		res.end(err);
-				// 	} else {
-				// 		res.writeHead(200, {
-				// 			'Content-Type': 'image/jpeg'
-				// 		});
-				// 		res.write(file);
-				// 		res.end();
-				// 	}
-				// });
 			}
 		});
 
