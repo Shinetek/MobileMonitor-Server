@@ -20,7 +20,7 @@
         /*app列表*/
         self.apkModuleList = [];
         /*传递给模态框的 apkModule*/
-        self.selectedAPKModule = {};
+        self.selectedAPKModule = {manualVersion: false};
         /*上传文件列表*/
         self.uploadFiles = [];
 
@@ -45,6 +45,7 @@
         $scope.$watch('files', function () {
             if ($scope.files !== null && $scope.files !== undefined) {
                 $scope.files.forEach(function (item) {
+                    self.uploadFiles.splice(0, self.uploadFiles.length);
                     self.uploadFiles.push({
                         progressPercentage: 0,
                         name: item.name
@@ -62,18 +63,6 @@
 
         $scope.upload = function (files) {
             if (files && files.length) {
-                // if (self.selectedAPKModule === null || self.selectedAPKModule.name === undefined || self.selectedAPKModule.name === "") {
-                //     alert("请先填写应用名称");
-                //     return;
-                // }
-                // if (self.selectedAPKModule === null || self.selectedAPKModule.version === undefined || self.selectedAPKModule.version === "") {
-                //     alert("请先填写版本号");
-                //     return;
-                // }
-                // if (!_checkVersion(self.selectedAPKModule.version)) {
-                //     return;
-                // }
-
                 for (var i = 0; i < files.length; i++) {
                     var file = files[i];
                     // var fileExtension = file.name.substring(file.name.lastIndexOf('.') + 1);
@@ -83,28 +72,36 @@
                     //     name: item.name
                     // });
                     self.selectedAPKModule.size += file.size;
-                    (function (i) {                
-                        return  Upload.upload({                  
-                            url:   'http://123.56.135.196:4102/api/uploading',
-                            fields:  {
-                                'username':  $scope.username
+                    (function (i) {
+                        return Upload.upload({
+                            url: 'http://123.56.135.196:4102/api/uploading',
+                            // url: "http://localhost:4102/api/uploading",
+                            fields: {
+                                'username': $scope.username
                             },
-                            file:  file              
-                        }).progress(function  (evt)  {                
-                            $scope.showProgress  =  true;                
-                            var  progressPercentage  =  parseInt(100.0  *  evt.loaded  /  evt.total); //上传百分比                            
+                            file: file
+                        }).progress(function (evt) {
+                            $scope.showProgress = true;
+                            var progressPercentage = parseInt(100.0 * evt.loaded / evt.total); //上传百分比
                             for (var i = 0; i < self.uploadFiles.length; i++) {
                                 if (self.uploadFiles[i].name === evt.config.file.name) {
-                                    self.uploadFiles[i].progressPercentage  = progressPercentage;
+                                    self.uploadFiles[i].progressPercentage = progressPercentage;
                                 }
                             }
-                            console.log('progress: '  +  progressPercentage  +  '% '  +  evt.config.file.name);              
-                        }).success(function  (data,  status,  headers,  config)  {                
-                            $scope.showProgress  =  true;
+                            console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
+                        }).success(function (data, status, headers, config) {
+                            $scope.showProgress = true;
+                            console.log(data);
                             self.selectedAPKModule.filePath = data.url;
-                            console.log('file '  +  config.file.name  +  'uploaded. Response: ',  data);                
-                            console.log("size:"  +  (config.file.size / 1000).toFixed(2)); //一个文件上传成功
-                        });            
+                            if (!data.versionName) {
+                                alert("无法获取apk版本号 请手动填写!");
+                                self.selectedAPKModule.manualVersion = true;
+                            } else {
+                                self.selectedAPKModule.version = "v" + data.versionName;
+                            }
+                            console.log('file ' + config.file.name + 'uploaded. Response: ', data);
+                            console.log("size:" + (config.file.size / 1000).toFixed(2)); //一个文件上传成功
+                        });
                     })(i);
                 }
             }
@@ -248,6 +245,7 @@
             }
             self.selectedAPKModule = apkModule;
             self.selectedAPKModule.size = 0;
+            self.selectedAPKModule.manualVersion = false;
             self.uploadFiles = [];
             updateModal.modal({
                 backdrop: 'static',

@@ -7,7 +7,7 @@
 
     //加载配置
     var Config = require("./config.json");
-    const HTTP_PORT = process.env.HTTP_PORT || 4102;
+    const HTTP_PORT = process.env.HTTP_PORT || 4202;
     const MONGOOSE_URI = process.env.MONGOOSE_URI || Config.MongodbUrl;
 
     var mongoose = require("mongoose");
@@ -30,7 +30,7 @@
         });
 
         //连接失败
-        mongoose.connection.on("error", function(){
+        mongoose.connection.on("error", function(err){
            console.log("Mongoose connection error" + err);
         });
     })();
