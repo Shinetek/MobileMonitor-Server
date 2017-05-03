@@ -74,8 +74,8 @@
                     self.selectedAPKModule.size += file.size;
                     (function (i) {
                         return Upload.upload({
-                            // url: 'http://123.56.135.196:4102/api/uploading',
-                            url: "http://localhost:4102/api/uploading",
+                            url: 'http://123.56.135.196:4102/api/uploading',
+                            // url: "http://localhost:4102/api/uploading",
                             fields: {
                                 'username': $scope.username
                             },
