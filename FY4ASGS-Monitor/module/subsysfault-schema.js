@@ -7,49 +7,43 @@
     var mongoose = require('mongoose');
     var Schema = mongoose.Schema;
     var subSysFaultSchema = new Schema({
-            "SEMP--": {
-                cur_plan: {type: Number},
-                day_plan: {type: Number},
-                failure: {type: Number},
-                instrumentid: {type: String},
-                success: {type: Number}
-            },
-            agri: {
-                cur_plan: {type: Number},
-                day_plan: {type: Number},
-                failure: {type: Number},
-                instrumentid: {type: String},
-                success: {type: Number}
-            },
-            giirs: {
-                cur_plan: {type: Number},
-                day_plan: {type: Number},
-                failure: {type: Number},
-                instrumentid: {type: String},
-                success: {type: Number}
-            },
-            lmi:{
-                cur_plan: {type: Number},
-                day_plan: {type: Number},
-                failure: {type: Number},
-                instrumentid: {type: String},
-                success: {type: Number}
-            },
-            orbit: {
-                cur_plan: {type: Number},
-                day_plan: {type: Number},
-                failure: {type: Number},
-                instrumentid: {type: String},
-                success: {type: Number}
-            },
-            satellite: {
-                cur_plan: {type: Number},
-                day_plan: {type: Number},
-                failure: {type: Number},
-                instrumentid: {type: String},
-                success: {type: Number}
-            }
-        });
+        CNS: {
+            L1: {type: Number},
+            L2: {type: Number}
+        },
+        CVS: {
+            L1: {type: Number},
+            L2: {type: Number}
+        },
+        DSS: {
+            L1: {type: Number},
+            L2: {type: Number}
+        },
+        DTS: {
+            L1: {type: Number},
+            L2: {type: Number}
+        },
+        DTS_MRS: {
+            L1: {type: Number},
+            L2: {type: Number}
+        },
+        MCS: {
+            L1: {type: Number},
+            L2: {type: Number}
+        },
+        NRS: {
+            L1: {type: Number},
+            L2: {type: Number}
+        },
+        PGS: {
+            L1: {type: Number},
+            L2: {type: Number}
+        },
+        SWS: {
+            L1: {type: Number},
+            L2: {type: Number}
+        }
+    });
     subSysFaultSchema.methods.initData = function (body) {
         var self = this;
         for(var prop in body){

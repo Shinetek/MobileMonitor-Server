@@ -10,7 +10,7 @@
         //http://10.24.240.73:8080/_ds/mcs/faultlog/stat?date=20170426  分系统的故障状态
 
         server.get({
-            path:BASEPATH + "/faultlog/stat/:data",
+            path:BASEPATH + "/faultlog/stat",
             version:"0.0.1"
         },_getSubsysFault);
     };

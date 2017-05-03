@@ -8,7 +8,7 @@
     module.exports = function(server, BASEPATH){
         //http://10.24.240.73:8080/_ds/mcs/resource/dts_station?date=20170426&time=031417 分系统的设备状态
         server.get({
-            path: BASEPATH + "/resource/dts_station/:date/:time",
+            path: BASEPATH + "/resource/dts_station",
             version:"0.0.1"
         },_getSubdassState);
     };
