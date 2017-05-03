@@ -11,14 +11,16 @@
     var fs = require("fs");
     var path = require("path");
     var util = require("util");
+    var parserAPK = require("apk-parser");
     var ApkSchema = require("../modules/apkModule.js");
-    
+    var config = require("../config.json");
+
 
     module.exports = function () {
         var router = new Router();
         router.route("/autoupdate").get(_autoUpdate);
         router.route("/api/uploading").post(_uploading);
-	    router.route('/setup').get(_setupApp);
+        router.route('/setup').get(_setupApp);
         router.route("/api/release").post(_submitRelease);
         router.route("/api/release").get(_getApkList);
         router.route("/api/updating").get(_updatingRelease);
@@ -28,7 +30,8 @@
 
     function _downloadRelease(req, res, next) {
         //var apkName = req.params['apkName'];
-        var filePath = ".." + req.url;
+        // var filePath = ".." + req.url;
+        var filePath = config.uploadPath + req.url;
         filePath = path.join(__dirname, filePath);
         fs.exists(filePath, function (existFlg) {
             if (!existFlg) {
@@ -121,7 +124,7 @@
                 _apkSchema.initData(body);
                 _apkSchema.save(function (err) {
                     if (err) {
-                        return next(new DBOptionError(415, err));
+                        return next(new Error(415, err));
                     } else {
                         res.end();
                     }
@@ -145,7 +148,7 @@
                     }
                 }, function (err) {
                     if (err) {
-                        return next(new DBOptionError(415, err));
+                        return next(new Error(415, err));
                     } else {
                         res.end();
                     }
@@ -156,7 +159,7 @@
 
     function _uploading(req, res, next) {
         var form = new multipart.Form({
-            uploadDir: './uploading/apk/'
+            uploadDir: config.uploadPath + '/uploading/apk/'
         });
 
         form.parse(req, function (err, fields, files) {
@@ -171,7 +174,7 @@
                 console.log('parse files: ' + filesTmp);
                 var inputFile = files.file[0];
                 var uploadedPath = inputFile.path;
-                var dstPath = './uploading/apk/' + inputFile.originalFilename;
+                var dstPath = config.uploadPath + '/uploading/apk/' + inputFile.originalFilename;
                 fs.rename(uploadedPath, dstPath, function (err) {
                     if (err) {
                         console.log('rename error: ' + err);
@@ -180,13 +183,21 @@
                         });
                         res.end(JSON.stringify(err));
                     } else {
-                        res.writeHead(200, {
-                            'content-type': 'text/plain;charset=utf-8'
+                        parserAPK(dstPath, function (err, data) {
+                            var body = {};
+                            body.url = '/uploading/apk/' + inputFile.originalFilename;
+                            if (!err) {
+                                var manifest = data["manifest"][0];
+                                if (manifest !== undefined) {
+                                    body.versionName = manifest["@android:versionName"];
+                                }
+                            }
+                            res.writeHead(200, {
+                                'content-type': 'text/plain;charset=utf-8'
+                            });
+                            //res.write('received upload:\n\n');
+                            res.end(JSON.stringify(body));
                         });
-                        //res.write('received upload:\n\n');
-                        res.end(JSON.stringify({
-                            url: '/uploading/apk/' + inputFile.originalFilename
-                        }));
                     }
                 });
             }
@@ -198,51 +209,51 @@
         res.sendfile("app/index.html");
     }
 
-	function _setupApp(req, res, next) {
-		var apkName = req.query["name"];
-		ApkSchema.find({
-			name: apkName
-		}, function (err, doc) {
-			if (err) {
-				return next(new Error(err.stack));
-			}
-			if (doc.length === 0) {
-				return res.end();
-			}
-			var versionList = doc[0].tags;
-			versionList.sort(function (a, b) {
-				return b.version > a.version;
-			});
-			var filePath = ".." + versionList[0].filePath;
-			filePath = path.join(__dirname, filePath);
-			fs.exists(filePath, function (existFlg) {
-				if (!existFlg) {
-					res.writeHead(404, {
-						'Content-Type': 'text/plain'
-					});
-					res.write("This request URL " + req.url + " was not found on this server.");
-					res.end();
-				} else {
-					fs.readFile(filePath, "binary", function (err, file) {
-						if (err) {
-							res.writeHead(500, {
-								'Content-Type': 'text/plain'
-							});
-							res.end(err);
-						} else {
-							res.writeHead(200, {
-								'Content-Type': 'application/vnd.android.package-archive',
-								'Content-Disposition': 'attachment; filename=' + apkName + '.apk'
-							});
-							res.write(file, "binary");
-							res.end();
-						}
-					});
+    function _setupApp(req, res, next) {
+        var apkName = req.query["name"];
+        ApkSchema.find({
+            name: apkName
+        }, function (err, doc) {
+            if (err) {
+                return next(new Error(err.stack));
+            }
+            if (doc.length === 0) {
+                return res.end();
+            }
+            var versionList = doc[0].tags;
+            versionList.sort(function (a, b) {
+                return b.version > a.version;
+            });
+            var filePath = ".." + versionList[0].filePath;
+            filePath = path.join(__dirname, filePath);
+            fs.exists(filePath, function (existFlg) {
+                if (!existFlg) {
+                    res.writeHead(404, {
+                        'Content-Type': 'text/plain'
+                    });
+                    res.write("This request URL " + req.url + " was not found on this server.");
+                    res.end();
+                } else {
+                    fs.readFile(filePath, "binary", function (err, file) {
+                        if (err) {
+                            res.writeHead(500, {
+                                'Content-Type': 'text/plain'
+                            });
+                            res.end(err);
+                        } else {
+                            res.writeHead(200, {
+                                'Content-Type': 'application/vnd.android.package-archive',
+                                'Content-Disposition': 'attachment; filename=' + apkName + '.apk'
+                            });
+                            res.write(file, "binary");
+                            res.end();
+                        }
+                    });
 
-				}
-			});
+                }
+            });
 
-		});
-	}
+        });
+    }
 
 })();

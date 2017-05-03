@@ -85,7 +85,7 @@
                     <input class="form" style="width: 130px" required="required" type="text" placeholder="应用名称" ng-model="Ctrl.selectedAPKModule.name"/>
                     <div class="release-target-wrapper">
                         @
-                        <input class="form d-inline-block ml-1" style="width: 130px" required="required" type="text"
+                        <input class="form d-inline-block ml-1" style="width: 130px" required="required" type="text" ng-disabled="!Ctrl.selectedAPKModule.manualVersion"
                                placeholder="版本号" ng-model="Ctrl.selectedAPKModule.version" list="version"/>
                         <datalist id="version">
                             <option ng-repeat="tag in Ctrl.selectedAPKModule.tags" value="{{tag.version}}"></option>
