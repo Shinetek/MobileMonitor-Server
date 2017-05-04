@@ -79,7 +79,7 @@
             versionList.sort(function (a, b) {
                 return _compareVersion(b.version, a.version);
             });
-            if (versionList[0].version > version) {
+            if (_compareVersion(versionList[0].version, version) === 1) {
                 return res.end(JSON.stringify({
                     latestVersion: versionList[0].version,
                     path: "http://123.56.135.196:4102" + versionList[0].filePath,
