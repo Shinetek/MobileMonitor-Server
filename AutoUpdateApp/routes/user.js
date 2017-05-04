@@ -32,7 +32,7 @@
         //var apkName = req.params['apkName'];
         // var filePath = ".." + req.url;
         var filePath = config.uploadPath + req.url;
-        filePath = path.join(__dirname, filePath);
+        //filePath = path.join(__dirname, filePath);
         fs.exists(filePath, function (existFlg) {
             if (!existFlg) {
                 res.writeHead(404, {
@@ -77,7 +77,7 @@
             }
             var versionList = doc[0].tags;
             versionList.sort(function (a, b) {
-                return b.version > a.version;
+                return _compareVersion(b.version, a.version);
             });
             if (versionList[0].version > version) {
                 return res.end(JSON.stringify({
@@ -222,7 +222,7 @@
             }
             var versionList = doc[0].tags;
             versionList.sort(function (a, b) {
-                return b.version > a.version;
+                return _compareVersion(b.version, a.version);
             });
             var filePath = ".." + versionList[0].filePath;
             filePath = path.join(__dirname, filePath);
@@ -255,5 +255,35 @@
 
         });
     }
+
+    function _compareVersion(a, b) {
+            var aList = a.replace("v", "").split(".");
+            var bList = b.replace("v", "").split(".");
+            var majorV_a = Number(aList[0]);
+            var minorV_a = Number(aList[1]);
+            var revisionV_a = Number(aList[2]);
+            var majorV_b = Number(bList[0]);
+            var minorV_b = Number(bList[1]);
+            var revisonV_b = Number(bList[2]);
+            if (majorV_a === majorV_b) {
+                if (minorV_a === minorV_b) {
+                    if (revisionV_a === revisonV_b) {
+                        return 0;
+                    } else if (revisionV_a < revisonV_b) {
+                        return -1;
+                    } else {
+                        return 1;
+                    }
+                } else if (minorV_a < minorV_b) {
+                    return -1;
+                } else {
+                    return 1;
+                }
+            } else if (majorV_a < majorV_b) {
+                return -1;
+            } else {
+                return 1;
+            }
+        }
 
 })();

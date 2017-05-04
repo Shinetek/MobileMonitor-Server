@@ -162,15 +162,49 @@
                 return true;
             } else {
                 for (var i = 0; i < self.selectedAPKModule.tags.length; i++) {
-                    if (self.selectedAPKModule.tags[i].version === version) {
+                    // if (self.selectedAPKModule.tags[i].version === version) {
+                    if (_compareVersion(self.selectedAPKModule.tags[i].version, version) === 0) {
                         alert('该版本号已存在');
                         return false;
-                    } else if (self.selectedAPKModule.tags[i].version > version) {
+                    } else if (_compareVersion(self.selectedAPKModule.tags[i].version, version) === 1) {
                         alert('该版本号小于已存在的版本号');
                         return false;
                     }
                 }
                 return true;
+            }
+        }
+
+        // a > b : 1;
+        // a = b : 0;
+        // a < b : -1;
+        function _compareVersion(a, b) {
+            var aList = a.replace("v", "").split(".");
+            var bList = b.replace("v", "").split(".");
+            var majorV_a = Number(aList[0]);
+            var minorV_a = Number(aList[1]);
+            var revisionV_a = Number(aList[2]);
+            var majorV_b = Number(bList[0]);
+            var minorV_b = Number(bList[1]);
+            var revisonV_b = Number(bList[2]);
+            if (majorV_a === majorV_b) {
+                if (minorV_a === minorV_b) {
+                    if (revisionV_a === revisonV_b) {
+                        return 0;
+                    } else if (revisionV_a < revisonV_b) {
+                        return -1;
+                    } else {
+                        return 1;
+                    }
+                } else if (minorV_a < minorV_b) {
+                    return -1;
+                } else {
+                    return 1;
+                }
+            } else if (majorV_a < majorV_b) {
+                return -1;
+            } else {
+                return 1;
             }
         }
 
@@ -182,42 +216,6 @@
         }
 
         function _initData() {
-            // self.apkModuleList.push({
-            //     name: "Shinetek-View",
-            //     title: "全球图像浏览服务",
-            //     tags: [{
-            //         version: "v0.0.1",
-            //         varDate: new Date("2017-01-03 20:00"),
-            //         content: "",
-            //         filePath: ""
-            //     }, {
-            //         version: "v0.0.2",
-            //         varDate: new Date("2017-03-03 20:00"),
-            //         content: "",
-            //         filePath: ""
-            //     }, {
-            //         version: "v0.0.3",
-            //         varDate: new Date("2017-04-05 3:00"),
-            //         content: "",
-            //         filePath: ""
-            //     }]
-            // });
-
-            // self.apkModuleList.push({
-            //     name: "ShinetekView-SnapshotServer",
-            //     title: "ShinetekView-App的快照服务",
-            //     tags: [{
-            //         version: "v0.0.1",
-            //         varDate: new Date("2017-01-03 20:00"),
-            //         content: "",
-            //         filePath: ""
-            //     }, {
-            //         version: "v0.0.2",
-            //         varDate: new Date("2017-04-03 15:00"),
-            //         content: "",
-            //         filePath: ""
-            //     }]
-            // });
             AutoUpdateServices.getAPKList(function (res) {
                 _refreshApkList(res.data);
             }, function (err) {
