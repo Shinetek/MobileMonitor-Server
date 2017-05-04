@@ -51,10 +51,31 @@
         //api定义
         //分系统的设备状态
         require("./routers/subdasstate.js")(server, BASEPATH);
+
         //分系统的故障状态
-        require("./routers/subsysfault.js")(server, BASEPATH);  
+        require("./routers/subsysfault.js")(server, BASEPATH);
+
+        //任务状态
+        require("./routers/taskstate.js")(server, BASEPATH);
+
+        //任务的当前 已完成 下一个的状态
+        require("./routers/tasknear.js")(server, BASEPATH);
+
+        //任务列表
+        require("./routers/task.js")(server, BASEPATH);
+
+        //单个任务流程
+        require("./routers/taskdetail.js")(server, BASEPATH);
+
+        //分系统的一级故障状态
+        require("./routers/faultlevele.js")(server, BASEPATH);
+
+        //分系统的二级故障状态
+        require("./routers/faultlevelf.js")(server, BASEPATH);
+
+
         //1级数据图像获取
-        require("./routers/lv1fastview.js")(server, BASEPATH);
+       require("./routers/lv1fastview.js")(server, BASEPATH);
 
         server.listen(HTTP_PORT, function(){
            console.log("%s listening at %s", server.name, server.url);
