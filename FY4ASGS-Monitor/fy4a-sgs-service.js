@@ -2,8 +2,8 @@
  * Created by admin on 2017/4/26.
  */
 
-(function(){
-   "use strict";
+(function () {
+    "use strict";
 
     //加载配置
     var Config = require("./config.json");
@@ -13,32 +13,32 @@
     var mongoose = require("mongoose");
     var RESTful = require("restify");
 
-    (function(){
+    (function () {
         //设置连接池
         var opt_Mongoose = {
-            server:{
-                auto_reconnect:true,
-                poolSize:100
+            server: {
+                auto_reconnect: true,
+                poolSize: 100
             }
         };
         //设置数据库连接
         mongoose.connect(MONGOOSE_URI, opt_Mongoose);
 
         //连接成功
-        mongoose.connection.on("connected", function(){
-           console.log("Mongoose connection open to" + MONGOOSE_URI);
+        mongoose.connection.on("connected", function () {
+            console.log("Mongoose connection open to" + MONGOOSE_URI);
         });
 
         //连接失败
-        mongoose.connection.on("error", function(err){
-           console.log("Mongoose connection error" + err);
+        mongoose.connection.on("error", function (err) {
+            console.log("Mongoose connection error" + err);
         });
     })();
 
     //创建服务
-    (function(){
+    (function () {
         var server = RESTful.createServer({
-            name:"fy4-api"
+            name: "fy4-api"
         });
 
         //设置中间件
@@ -73,12 +73,14 @@
         //分系统的二级故障状态
         require("./routers/faultlevelf.js")(server, BASEPATH);
 
+        //分系统性能参数
+        require("./routers/capability.js")(server);
 
         //1级数据图像获取
-       require("./routers/lv1fastview.js")(server, BASEPATH);
+        require("./routers/lv1fastview.js")(server, BASEPATH);
 
-        server.listen(HTTP_PORT, function(){
-           console.log("%s listening at %s", server.name, server.url);
+        server.listen(HTTP_PORT, function () {
+            console.log("%s listening at %s", server.name, server.url);
         });
 
     })();
