@@ -16,7 +16,6 @@
     };
 
     function _getTaskState(req, res, next){
-        console.log(3);
         taskStateSchema
         .find()
         .exec(function(err, doc){

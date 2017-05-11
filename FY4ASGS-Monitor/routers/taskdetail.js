@@ -16,7 +16,6 @@
     };
 
     function _getTaskDetail(req, res, next){
-        console.log(5);
         var _inst = req.params["inst"];
         var _task_id = req.params["task_id"];
         TaskDetailSchema

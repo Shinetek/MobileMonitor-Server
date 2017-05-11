@@ -10,19 +10,20 @@
        // http://10.24.240.73:8080/_ds/mcs/faultlog/list/dts?status=undeal&fault_level=E&start_index=1&end_index=50 分系统的二级故障状态
 
         server.get({
-            path:BASEPATH + "/faultlog/list/dtse/:status/:start/:end",
+            path:BASEPATH + "/faultlog/liste/:sys/:status/:start/:end",
             version:"0.0.1"
         },_getFaultLeveE);
     };
 
     function _getFaultLeveE(req, res, next){
-        console.log(6);
-        var status = req.params["status"];
+        var _sys = req.params["sys"];
+        var _status = req.params["status"];
         var startNum = Number(req.params["start"]);
         var pageSize = Number(req.params["end"]);
         faultlevelESchema
             .find({
-                status:status
+                status:_status,
+                sys:_sys
             })
             .skip(startNum - 1)
             .limit(pageSize)

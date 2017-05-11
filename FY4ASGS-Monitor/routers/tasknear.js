@@ -16,7 +16,6 @@
     };
 
     function _getTaskNear(req, res, next){
-        console.log(3);
         var _inst = req.params["inst"];
         taskNearSchema
             .find({

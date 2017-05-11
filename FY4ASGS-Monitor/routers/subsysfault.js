@@ -16,7 +16,7 @@
     };
 
     function _getSubsysFault(req, res, next){
-        console.log(2);
+
         subSysFaultSchema
         .find()
         .exec(function(err, doc){

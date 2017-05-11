@@ -16,12 +16,12 @@
     };
 
     function _getTask(req, res, next) {
-        console.log(4);
         var _inst = req.params["inst"];
         TaskSchema
             .find({
                 inst: _inst
             })
+            .sort({"time":1})
             .exec(function (err, doc) {
                 res.end(JSON.stringify(doc));
             });

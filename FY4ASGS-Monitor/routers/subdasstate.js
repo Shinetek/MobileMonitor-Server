@@ -14,14 +14,9 @@
     };
 
     function _getSubdassState(req, res, next){
-        //console.log(1);
-        console.log(req.params.date);
         subDasStateSchema
             .find()
             .exec(function (err, doc){
-                /*var result = {
-                   data:doc
-                };*/
                 res.end(JSON.stringify(doc));
             });
     }
