@@ -49,7 +49,8 @@
                         res.end(err);
                     } else {
                         res.writeHead(200, {
-                            'Content-Type': 'text/plain'
+                            'Content-Type': 'text/plain',
+                            'Content-Length': file.length
                         });
                         res.write(file, "binary");
                         res.end();
@@ -243,6 +244,7 @@
                         } else {
                             res.writeHead(200, {
                                 'Content-Type': 'application/vnd.android.package-archive',
+                                'Content-Length': file.length,
                                 'Content-Disposition': 'attachment; filename=' + apkName + '.apk'
                             });
                             res.write(file, "binary");
