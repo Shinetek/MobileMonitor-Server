@@ -1,4 +1,6 @@
 {
   "mongodbUrl": "mongodb://shk401:68400145@123.56.135.196:6840/AutoUpdate",
-  "uploadPath": "/home/fantasylin/WorkStation"
+  "uploadPath": "/home/fantasylin/WorkStation",
+  "host": "localhost:4102"
 }
+

@@ -13,6 +13,7 @@
     var util = require("util");
     var parserAPK = require("apk-parser");
     var ApkSchema = require("../modules/apkModule.js");
+    var UpdateLogSchema = require("../modules/apkUpdateLogModule.js");
     var config = require("../config.json");
 
 
@@ -29,12 +30,32 @@
     };
 
     function _downloadRelease(req, res, next) {
-        //var apkName = req.params['apkName'];
-        // var filePath = ".." + req.url;
-        var filePath = config.uploadPath + req.url;
-        //filePath = path.join(__dirname, filePath);
+        var url = req.url;
+        var apkName = req.query["name"];
+        var version = req.query["version"];
+        var body = undefined;
+        if (req.url.indexOf("?") !== -1) {
+            url = req.url.substring(0, req.url.indexOf("?"));
+        }
+        var filePath = config.uploadPath + url;
+        console.log(filePath);
         fs.exists(filePath, function (existFlg) {
             if (!existFlg) {
+                body = {
+                    name: apkName,
+                    version: version,
+                    result: "failed",
+                    log: filePath + " is not exist"
+                };
+                var _updateLogSchema = new UpdateLogSchema();
+                _updateLogSchema.initData(body);
+                _updateLogSchema.save(function (err) {
+                    if (err) {
+                        return next(new Error(415, err));
+                    } else {
+                        res.end();
+                    }
+                });
                 res.writeHead(404, {
                     'Content-Type': 'text/plain'
                 });
@@ -43,11 +64,43 @@
             } else {
                 fs.readFile(filePath, "binary", function (err, file) {
                     if (err) {
+
+                        body = {
+                            name: apkName,
+                            version: version,
+                            result: "failed",
+                            log: JSON.stringify(err)
+                        };
+                        var _updateLogSchema = new UpdateLogSchema();
+                        _updateLogSchema.initData(body);
+                        _updateLogSchema.save(function (err) {
+                            if (err) {
+                                return next(new Error(415, err));
+                            } else {
+                                res.end();
+                            }
+                        });
                         res.writeHead(500, {
                             'Content-Type': 'text/plain'
                         });
-                        res.end(err);
+                        res.end(JSON.stringify(err));
                     } else {
+
+                        body = {
+                            name: apkName,
+                            version: version,
+                            result: "success",
+                            log: ""
+                        };
+                        var _updateLogSchema = new UpdateLogSchema();
+                        _updateLogSchema.initData(body);
+                        _updateLogSchema.save(function (err) {
+                            if (err) {
+                                return next(new Error(415, err));
+                            } else {
+                                res.end();
+                            }
+                        });
                         res.writeHead(200, {
                             'Content-Type': 'text/plain',
                             'Content-Length': file.length
@@ -55,9 +108,18 @@
                         res.write(file, "binary");
                         res.end();
                     }
-                });
 
+                });
             }
+            // var _updateLogSchema = new UpdateLogSchema();
+            // _updateLogSchema.initData(body);
+            // _updateLogSchema.save(function (err) {
+            //     if (err) {
+            //         return next(new Error(415, err));
+            //     } else {
+            //         res.end();
+            //     }
+            // });
         });
     }
 
@@ -83,7 +145,7 @@
             if (_compareVersion(versionList[0].version, version) === 1) {
                 return res.end(JSON.stringify({
                     latestVersion: versionList[0].version,
-                    path: "http://123.56.135.196:4102" + versionList[0].filePath,
+                    path: "http://" + config.host + versionList[0].filePath + "?name=" + apkName + "&version=" + versionList[0].version,
                     size: versionList[0].size
                 }));
             } else {
@@ -259,33 +321,33 @@
     }
 
     function _compareVersion(a, b) {
-            var aList = a.replace("v", "").split(".");
-            var bList = b.replace("v", "").split(".");
-            var majorV_a = Number(aList[0]);
-            var minorV_a = Number(aList[1]);
-            var revisionV_a = Number(aList[2]);
-            var majorV_b = Number(bList[0]);
-            var minorV_b = Number(bList[1]);
-            var revisonV_b = Number(bList[2]);
-            if (majorV_a === majorV_b) {
-                if (minorV_a === minorV_b) {
-                    if (revisionV_a === revisonV_b) {
-                        return 0;
-                    } else if (revisionV_a < revisonV_b) {
-                        return -1;
-                    } else {
-                        return 1;
-                    }
-                } else if (minorV_a < minorV_b) {
+        var aList = a.replace("v", "").split(".");
+        var bList = b.replace("v", "").split(".");
+        var majorV_a = Number(aList[0]);
+        var minorV_a = Number(aList[1]);
+        var revisionV_a = Number(aList[2]);
+        var majorV_b = Number(bList[0]);
+        var minorV_b = Number(bList[1]);
+        var revisonV_b = Number(bList[2]);
+        if (majorV_a === majorV_b) {
+            if (minorV_a === minorV_b) {
+                if (revisionV_a === revisonV_b) {
+                    return 0;
+                } else if (revisionV_a < revisonV_b) {
                     return -1;
                 } else {
                     return 1;
                 }
-            } else if (majorV_a < majorV_b) {
+            } else if (minorV_a < minorV_b) {
                 return -1;
             } else {
                 return 1;
             }
+        } else if (majorV_a < majorV_b) {
+            return -1;
+        } else {
+            return 1;
         }
+    }
 
 })();
