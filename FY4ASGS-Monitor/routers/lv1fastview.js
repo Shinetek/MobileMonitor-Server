@@ -40,7 +40,7 @@
             inst += '-';
         }
         console.log(inst);
-        var filePath = satID + '_' + inst + '_' + 'N_DISK_0995E_L1A_GEO-'
+        var filePath = satID + '_' + inst + '_' + 'N_DISK_1047E_L1A_GEO-'
             + '_' + chnl + '_' + 'NUL' + '_' + bTime + '_' +
             resolution + '_' + '00000' + '_' + taskID + '.JPG';
 
