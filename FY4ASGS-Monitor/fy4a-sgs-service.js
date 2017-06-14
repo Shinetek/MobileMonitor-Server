@@ -33,6 +33,7 @@
         mongoose.connection.on("error", function (err) {
             console.log("Mongoose connection error" + err);
         });
+
     })();
 
     //创建服务
@@ -73,11 +74,17 @@
         //分系统的二级故障状态
         require("./routers/faultlevelf.js")(server, BASEPATH);
 
+        //卫星遥测
+        require("./routers/satellite.js")(server,BASEPATH);
+
+        //卫星遥测分组数据
+        require("./routers/satellite-group.js")(server,BASEPATH);
+
         //分系统性能参数
         require("./routers/capability.js")(server);
 
         //1级数据图像获取
-        require("./routers/lv1fastview.js")(server, BASEPATH);
+        //require("./routers/lv1fastview.js")(server, BASEPATH);
 
         server.listen(HTTP_PORT, function () {
             console.log("%s listening at %s", server.name, server.url);
