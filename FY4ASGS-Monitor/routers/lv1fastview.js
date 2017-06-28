@@ -24,6 +24,7 @@
 
     function _downloadfastview(req, res, next) {
         // FY4A-_AGRI--_N_DISK_0995E_L1A_GEO-_C001_NUL_20170426081500_20170426082750_4000M_00000_AFN20170426081500.JPG
+	    console.log(req.url);
         var satID = req.params['satid'];
         var inst = req.params['inst'];
         var chnl = req.params['chnl'];
