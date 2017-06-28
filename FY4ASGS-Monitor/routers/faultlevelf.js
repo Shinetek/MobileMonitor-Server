@@ -42,8 +42,9 @@
         var _status = req.params["status"];
         faultlevelFSchema
             .find({
-                status:_status,
+                status:_status
             })
+            .sort({"happen_dt":-1})
             .exec(function(err, doc){
                 res.end(JSON.stringify(doc));
             })
