@@ -87,7 +87,7 @@
         require("./routers/capability.js")(server);
 
         //1级数据图像获取
-        //require("./routers/lv1fastview.js")(server, BASEPATH);
+        require("./routers/lv1fastview.js")(server, BASEPATH);
 
         server.listen(HTTP_PORT, function () {
             console.log("%s listening at %s", server.name, server.url);
