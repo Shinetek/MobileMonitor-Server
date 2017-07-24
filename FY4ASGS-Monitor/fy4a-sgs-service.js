@@ -80,11 +80,14 @@
         //卫星遥测分组数据
         require("./routers/satellite-group.js")(server,BASEPATH);
 
+        //任务观测数据表
+        require("./routers/timetables.js")(server,BASEPATH);
+
         //分系统性能参数
         require("./routers/capability.js")(server);
 
         //1级数据图像获取
-        require("./routers/lv1fastview.js")(server, BASEPATH);
+        //require("./routers/lv1fastview.js")(server, BASEPATH);
 
         server.listen(HTTP_PORT, function () {
             console.log("%s listening at %s", server.name, server.url);
