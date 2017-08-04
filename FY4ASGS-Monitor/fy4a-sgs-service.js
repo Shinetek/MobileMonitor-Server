@@ -75,13 +75,16 @@
         require("./routers/faultlevelf.js")(server, BASEPATH);
 
         //卫星遥测
-        require("./routers/satellite.js")(server,BASEPATH);
+        require("./routers/satellite.js")(server, BASEPATH);
 
         //卫星遥测分组数据
-        require("./routers/satellite-group.js")(server,BASEPATH);
+        require("./routers/satellite-group.js")(server, BASEPATH);
 
         //任务观测数据表
-        require("./routers/timetables.js")(server,BASEPATH);
+        require("./routers/timetables.js")(server, BASEPATH);
+
+        //任务观测数据表 -SVG 显示模式
+        require("./routers/timetables_svg.js")(server, BASEPATH);
 
         //分系统性能参数
         require("./routers/capability.js")(server);
