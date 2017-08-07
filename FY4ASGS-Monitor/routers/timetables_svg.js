@@ -54,7 +54,7 @@
             }
             case 'GIIRS':
             {
-                m_SysName_ch = "成像仪";
+                m_SysName_ch = "探测仪";
                 break;
             }
             default:
@@ -81,9 +81,9 @@
         var SCREEM_WIDTH = Svg_width;
         var SCREEM_HEIGHT = Svg_Height;
 
-        var BASELINE = 62;
+        var BASELINE = 42;
         //文字和line 之间的距离
-        var TEXT_SPACE = 14;
+        var TEXT_SPACE = 5;
 
         var COLOR_BASE = ['#FFCE27', '#00CCFF', '#FF0000', '#009966'];
 
@@ -98,20 +98,20 @@
             'xmlns:xlink="http://www.w3.org/1999/xlink">' +
             '<g id="TimeTable">';
         //上方标题
-        var m_title_svg = '<text x="25%" y="1em" font-size="2em">' + m_SysName_ch + '观测任务时间表-' + m_TimeStr + '</text>';
+        var m_title_svg = '<text x="12%" y="1em" font-size="1.2em">' + m_SysName_ch + '观测任务时间表-' + m_TimeStr + '</text>';
         //时间轴参数
 
         m_innersvg = m_innersvg + m_title_svg;
         //循环绘制 时间轴
-        var m_hoursLine_svg = ' <rect width="' + SCREEM_WIDTH + '" height="1" y="3.5em" x="0" style="fill:black;"></rect>';
+        var m_hoursLine_svg = ' <rect width="' + SCREEM_WIDTH + '" height="1" y="2.5em" x="0" style="fill:black;"></rect>';
         m_innersvg = m_innersvg + m_hoursLine_svg;
         for (var i = 0; i <= 12; i++) {
             var m_MiniteLine_svg = '';
             var m_Minute_x = i * MINUTESPACE + BASELINE;
             if (i % 3 == 0) {
-                m_MiniteLine_svg = ' <rect width="1" height="15" y="3.5em" x="' + m_Minute_x + '" style="fill:black;"></rect>';
+                m_MiniteLine_svg = ' <rect width="1" height="15" y="2.5em" x="' + m_Minute_x + '" style="fill:black;"></rect>';
             } else {
-                m_MiniteLine_svg = ' <rect width="1" height="5" y="3.5em" x="' + m_Minute_x + '" style="fill:black;"></rect>';
+                m_MiniteLine_svg = ' <rect width="1" height="5" y="2.5em" x="' + m_Minute_x + '" style="fill:black;"></rect>';
             }
             //上方时间轴文字显示
             if (i % 3 == 0) {
@@ -120,7 +120,7 @@
                 if (m_timeStr_txt < 10) {
                     m_timeStr_txt = '0' + m_timeStr_txt;
                 }
-                var m_MiniteLine_text_svg = '<text y="3.5em" x="' + (m_Minute_x - 10) + '">' + m_timeStr_txt + '</text>';
+                var m_MiniteLine_text_svg = '<text y="3em" x="' + (m_Minute_x - 10) + '" font-size="0.8em">' + m_timeStr_txt + '</text>';
                 m_MiniteLine_svg = m_MiniteLine_svg + m_MiniteLine_text_svg;
             }
             m_innersvg = m_innersvg + m_MiniteLine_svg;
@@ -138,7 +138,7 @@
             if (time < 10) {
                 m_timestr = "0" + m_timestr;
             }
-            var m_timeShow = '<text x="5" y="' + m_text_y + '" font-size="2em" >' + m_timestr + '</text>';
+            var m_timeShow = '<text x="5" y="' + m_text_y + '" font-size="1em" >' + m_timestr + '</text>';
             var m_lineShow = ' <rect width="' + SCREEM_WIDTH + '" height="1" y="' + m_line_y + '" x="0" style="fill:black;"></rect>';
             m_innersvg = m_innersvg + m_timeShow + m_lineShow;
         }
@@ -178,10 +178,10 @@
             //同一行绘制 开始结束时间在同一个小时
             if (m_timebegin_hour === m_timeend_hour) {
 
-                var m_rectheight = LINESPACE - 5 * 2;
+                var m_rectheight = LINESPACE - 3 * 2;
                 //通过小时计算  y 的位置
 
-                var m_task_y = (LINESPACE * m_timebegin_hour + BASELINE) + 6;
+                var m_task_y = (LINESPACE * m_timebegin_hour + BASELINE) + 4;
                 //通过开始时间计算 x的位置
                 //var m_Minute_x = i * MINUTESPACE + BASELINE - 1;
 
@@ -199,15 +199,15 @@
                 var m_TaskName_show = m_TaskName;
 
                 if (m_TaskName.length * 14 > m_task_width) {
-                    var m_TextLength = Math.round(m_task_width / 14, 0) - 2;
+                    var m_TextLength = Math.round(m_task_width / 14, 0) - 1;
                     var m_TaskName_list = m_TaskName.split(':');
                     m_TaskName_show = m_TaskName_list[1];
                     m_TaskName_show = m_TaskName_show.substr(0, m_TextLength);
                 }
 
                 //var m_color = COLOR_BASE[m_TaskNumber % COLOR_BASE.length];
-                var m_taskNum_svg = '<text x=' + (m_task_x + 3) + ' y="' + (m_task_y + LINESPACE / 2 + 3)
-                    + '" font-size="1.5em" >'
+                var m_taskNum_svg = '<text x=' + (m_task_x + 3) + ' y="' + (m_task_y + LINESPACE / 2 + 2)
+                    + '" font-size="0.8em" >'
                     + m_TaskName_show + '</text>';
                 var m_task_svg = ' <rect width="' + m_task_width + '" height="' + m_rectheight + '" y="' + m_task_y + '" x="' + m_task_x + '" style="fill:' + m_color + ';">'
 
@@ -252,10 +252,10 @@
          * @returns {string}
          */
         function drawLine(HourNum, BeginMinute, BeginSec, EndMinute, EndSec, Color, Svg_Text) {
-            var m_rectheight = LINESPACE - 5 * 2;
+            var m_rectheight = LINESPACE - 3 * 2;
             //通过小时计算  y 的位置
 
-            var m_task_y = (LINESPACE * HourNum + BASELINE) + 6;
+            var m_task_y = (LINESPACE * HourNum + BASELINE) + 4;
             //通过开始时间计算 x的位置
             //var m_Minute_x = i * MINUTESPACE + BASELINE - 1;
 
@@ -271,13 +271,20 @@
             var m_TaskName_show = Svg_Text;
             if (Svg_Text.length * 14 > m_task_width) {
                 var m_TextLength = Math.round(m_task_width / 14, 0) - 2;
-                var m_TaskName_list = Svg_Text.split(':');
-                m_TaskName_show = m_TaskName_list[0];
+
+                if (BeginMinute !== 0 || BeginSec !== 0) {
+                    var m_TaskName_list = Svg_Text.split(':');
+                    m_TaskName_show = m_TaskName_list[1];
+
+                } else {
+                    var m_TaskName_list = Svg_Text.split(':');
+                    m_TaskName_show = m_TaskName_list[0];
+                }
                 // m_TaskName_show = m_TaskName_show.substr(0, m_TextLength);
             }
 
             //文字
-            var m_tasktext_svg = '<text x=' + (m_task_x + 3) + ' y="' + (m_task_y + LINESPACE / 2 + 3) + '" font-size="1.5em"' +
+            var m_tasktext_svg = '<text x=' + (m_task_x + 3) + ' y="' + (m_task_y + LINESPACE / 2 + 2) + '" font-size="0.8em"' +
                 'style="overflow: hidden;width: ' + m_task_width + '">'
                 + m_TaskName_show + '</text>';
             //底色
