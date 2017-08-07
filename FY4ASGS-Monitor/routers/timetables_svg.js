@@ -19,7 +19,7 @@
     };
 
     function _getTaskTables_svg(req, res, next) {
-        //console.log("_getTaskTables_svg");
+
         var _sys = req.params["sys"];
         var _width = req.params["width"];
         var _height = req.params["height"];
@@ -31,7 +31,6 @@
             .exec(function (err, doc) {
                 if (!err) {
                     var m_svg = drawSvg(doc, _width, _height, _sys);
-                    //console.log(m_svg);
                     res.end(m_svg);
                 }
                 next();
@@ -114,6 +113,16 @@
             } else {
                 m_MiniteLine_svg = ' <rect width="1" height="5" y="3.5em" x="' + m_Minute_x + '" style="fill:black;"></rect>';
             }
+            //上方时间轴文字显示
+            if (i % 3 == 0) {
+
+                var m_timeStr_txt = i * 5;
+                if (m_timeStr_txt < 10) {
+                    m_timeStr_txt = '0' + m_timeStr_txt;
+                }
+                var m_MiniteLine_text_svg = '<text y="3.5em" x="' + (m_Minute_x - 10) + '">' + m_timeStr_txt + '</text>';
+                m_MiniteLine_svg = m_MiniteLine_svg + m_MiniteLine_text_svg;
+            }
             m_innersvg = m_innersvg + m_MiniteLine_svg;
         }
 
@@ -158,15 +167,15 @@
             var m_timebegin_minute = parseInt(m_ScanBeginTime.substr(10, 2));
             var m_timebegin_second = parseInt(m_ScanBeginTime.substr(12, 2));
 
-            //console.log('BEGIN:' + m_timebegin_hour + ":" + m_timebegin_minute + ":" + m_timebegin_second);
+
             //"ScanEndTime": "20170718001049",
             var m_ScanEndTime = m_json.ScanEndTime;
 
             var m_timeend_hour = parseInt(m_ScanEndTime.substr(8, 2));
             var m_timeend_minute = parseInt(m_ScanEndTime.substr(10, 2));
             var m_timeend_second = parseInt(m_ScanEndTime.substr(12, 2));
-            //console.log('END  :' + m_timeend_hour + ":" + m_timeend_minute + ":" + m_timeend_second);
-            //同一行绘制
+
+            //同一行绘制 开始结束时间在同一个小时
             if (m_timebegin_hour === m_timeend_hour) {
 
                 var m_rectheight = LINESPACE - 5 * 2;
@@ -186,10 +195,20 @@
 
                 //  var m_color = '#FFCE27';
                 var m_color = COLOR_BASE[1];
+
+                var m_TaskName_show = m_TaskName;
+
+                if (m_TaskName.length * 14 > m_task_width) {
+                    var m_TextLength = Math.round(m_task_width / 14, 0) - 2;
+                    var m_TaskName_list = m_TaskName.split(':');
+                    m_TaskName_show = m_TaskName_list[1];
+                    m_TaskName_show = m_TaskName_show.substr(0, m_TextLength);
+                }
+
                 //var m_color = COLOR_BASE[m_TaskNumber % COLOR_BASE.length];
                 var m_taskNum_svg = '<text x=' + (m_task_x + 3) + ' y="' + (m_task_y + LINESPACE / 2 + 3)
-                    + '" font-size="1.5em" style="overflow: hidden;width: ' + m_task_width + '">'
-                    + m_TaskName + '</text>';
+                    + '" font-size="1.5em" >'
+                    + m_TaskName_show + '</text>';
                 var m_task_svg = ' <rect width="' + m_task_width + '" height="' + m_rectheight + '" y="' + m_task_y + '" x="' + m_task_x + '" style="fill:' + m_color + ';">'
 
                     + '</rect>';
@@ -219,7 +238,7 @@
         m_innersvg = m_innersvg +
             '</g>' +
             '</svg>';
-        //console.log(m_innersvg);
+
 
         /**
          *
@@ -249,10 +268,18 @@
             //通过任务编号 获取一个颜色 设置
             var m_color = Color;
             //var m_color = COLOR_BASE[m_TaskNumber % COLOR_BASE.length];
+            var m_TaskName_show = Svg_Text;
+            if (Svg_Text.length * 14 > m_task_width) {
+                var m_TextLength = Math.round(m_task_width / 14, 0) - 2;
+                var m_TaskName_list = Svg_Text.split(':');
+                m_TaskName_show = m_TaskName_list[0];
+                // m_TaskName_show = m_TaskName_show.substr(0, m_TextLength);
+            }
+
             //文字
             var m_tasktext_svg = '<text x=' + (m_task_x + 3) + ' y="' + (m_task_y + LINESPACE / 2 + 3) + '" font-size="1.5em"' +
                 'style="overflow: hidden;width: ' + m_task_width + '">'
-                + Svg_Text + '</text>';
+                + m_TaskName_show + '</text>';
             //底色
             var m_task_svg = ' <rect width="' + m_task_width + '" height="' + m_rectheight + '" y="' + m_task_y
                 + '" x="' + m_task_x + '" style="fill:' + m_color + ';">' + '</rect>';
@@ -297,7 +324,6 @@
             "Reset": "闪电仪复位"
         };
 
-        //console.log(Convert[TypeName_en]);
         if (Convert[TypeName_en]) {
             TypeName_ch = Convert[TypeName_en];
         }
