@@ -8,6 +8,8 @@
     "use strict";
 
     var TimeTableSchema = require("./../module/timetable_schame.js");
+    //用于遍历
+    var _ = require('lodash');
 
     module.exports = function (server, BASEPATH) {
         //http://10.24.240.76:8888/RSMS/api/rest/mcs/list/agri?date=20170718
@@ -38,6 +40,13 @@
     }
 
     function drawSvg(DataJosn, Svg_width, Svg_Height, SysName) {
+
+        //遍历获取名称列表
+        var m_NameListAll = [];
+        DataJosn.forEach(function (m_Item) {
+            m_NameListAll.push(m_Item.TaskName);
+        });
+        var m_NameList = _.uniq(m_NameListAll);
 
         var m_SysName_ch = "";
 
@@ -85,7 +94,7 @@
         //文字和line 之间的距离
         var TEXT_SPACE = 5;
 
-        var COLOR_BASE = ['#FFCE27', '#00CCFF', '#FF0000', '#009966'];
+        var COLOR_BASE = ['#00CCFF', '#00FF00', '#FF0000', '#FFFF00'];
 
         //计算24h 线间距
         var LINESPACE = Math.round((SCREEM_HEIGHT - BASELINE) / 24, 0) - 1;
@@ -98,7 +107,7 @@
             'xmlns:xlink="http://www.w3.org/1999/xlink">' +
             '<g id="TimeTable">';
         //上方标题
-        var m_title_svg = '<text x="12%" y="1em" font-size="1.2em">' + m_SysName_ch + '观测任务时间表-' + m_TimeStr + '</text>';
+        var m_title_svg = '<text x="14%" y="1em" font-size="1.2em">' + m_SysName_ch + '观测任务时间表-' + m_TimeStr + '</text>';
         //时间轴参数
 
         m_innersvg = m_innersvg + m_title_svg;
@@ -120,7 +129,7 @@
                 if (m_timeStr_txt < 10) {
                     m_timeStr_txt = '0' + m_timeStr_txt;
                 }
-                var m_MiniteLine_text_svg = '<text y="3em" x="' + (m_Minute_x - 10) + '" font-size="0.8em">' + m_timeStr_txt + '</text>';
+                var m_MiniteLine_text_svg = '<text y="3em" x="' + (m_Minute_x - 10) + '" font-size="0.7em">' + m_timeStr_txt + '</text>';
                 m_MiniteLine_svg = m_MiniteLine_svg + m_MiniteLine_text_svg;
             }
             m_innersvg = m_innersvg + m_MiniteLine_svg;
@@ -148,6 +157,7 @@
 
             var m_json = m_timetableJson[m_num];
 
+
             //任务号 用于 tag
             // "TaskCode": "GRS20170718000000",
             var m_TaskCode = m_json.TaskCode;
@@ -157,8 +167,26 @@
 
             var m_Task_en = m_json.TaskName;
             var m_Task_ch = EnglishConvert(m_Task_en);
+
+
+            var m_color = COLOR_BASE[0];
+            var m_TaskName;
+            if (m_SysName_ch === '探测仪') {
+                //探测仪 使用 RegionNo 填写 num 使用 RegionType 确定颜色
+                //console.log('探测仪');
+                //console.log(m_json.Params[0].RegionType);
+                m_color = COLOR_BASE[parseInt(m_json.Params[0].RegionType) % 4 - 1];
+                m_TaskNumber = m_json.Params[0].RegionNo;
+                m_TaskName = m_TaskNumber + ":" + m_Task_ch;
+            } else {
+                m_TaskName = m_TaskNumber + ":" + m_Task_ch;
+                //其他使用 名字确定颜色
+
+                m_color = COLOR_BASE[( _.indexOf(m_NameList, m_Task_en)) % 4];
+            }
+            //console.log(m_color);
             //      "TaskName": "RegionScan",
-            var m_TaskName = m_TaskNumber + ":" + m_Task_ch;
+
             //扫描开始结束时间
             //  "ScanBeginTime": "20170718000000"
             var m_ScanBeginTime = m_json.ScanBeginTime;
@@ -194,7 +222,7 @@
                 //通过任务编号 获取一个颜色
 
                 //  var m_color = '#FFCE27';
-                var m_color = COLOR_BASE[1];
+
 
                 var m_TaskName_show = m_TaskName;
 
@@ -202,12 +230,20 @@
                     var m_TextLength = Math.round(m_task_width / 14, 0) - 1;
                     var m_TaskName_list = m_TaskName.split(':');
                     m_TaskName_show = m_TaskName_list[1];
+                    if (m_TextLength < 2) {
+                        m_TextLength = 2;
+                    }
                     m_TaskName_show = m_TaskName_show.substr(0, m_TextLength);
+                } else {
+                    if (m_SysName_ch !== '探测仪') {
+                        var m_TaskName_list = m_TaskName.split(':');
+                        m_TaskName_show = m_TaskName_list[1];
+                    }
                 }
 
                 //var m_color = COLOR_BASE[m_TaskNumber % COLOR_BASE.length];
-                var m_taskNum_svg = '<text x=' + (m_task_x + 3) + ' y="' + (m_task_y + LINESPACE / 2 + 2)
-                    + '" font-size="0.8em" >'
+                var m_taskNum_svg = '<text x=' + (m_task_x + 1) + ' y="' + (m_task_y + LINESPACE / 2 + 1)
+                    + '" font-size="0.7em" >'
                     + m_TaskName_show + '</text>';
                 var m_task_svg = ' <rect width="' + m_task_width + '" height="' + m_rectheight + '" y="' + m_task_y + '" x="' + m_task_x + '" style="fill:' + m_color + ';">'
 
@@ -220,16 +256,16 @@
                 var hour_num = m_timeend_hour - m_timebegin_hour - 1;
 
                 //1 绘制开始时段的 剩下部分
-                var m_svg_beginhour = drawLine(m_timebegin_hour, m_timebegin_minute, m_timebegin_second, 60, 0, COLOR_BASE[1], m_TaskName);
+                var m_svg_beginhour = drawLine(m_timebegin_hour, m_timebegin_minute, m_timebegin_second, 60, 0, m_color, m_TaskName);
                 m_innersvg = m_innersvg + m_svg_beginhour;
                 //2 绘制中间时段 *n
                 for (var h = 1; h <= hour_num; h++) {
-                    var m_svg_hour = drawLine(m_timebegin_hour + h, 0, 0, 60, 0, COLOR_BASE[1], m_TaskName);
+                    var m_svg_hour = drawLine(m_timebegin_hour + h, 0, 0, 60, 0, m_color, m_TaskName);
                     m_innersvg = m_innersvg + m_svg_hour;
                 }
                 //3 绘制结束时间段
 
-                var m_svg_endhour = drawLine(m_timeend_hour, 0, 0, m_timeend_minute, m_timeend_second, COLOR_BASE[1], m_TaskName);
+                var m_svg_endhour = drawLine(m_timeend_hour, 0, 0, m_timeend_minute, m_timeend_second, m_color, m_TaskName);
                 m_innersvg = m_innersvg + m_svg_endhour;
             }
         }
@@ -279,12 +315,13 @@
                 } else {
                     var m_TaskName_list = Svg_Text.split(':');
                     m_TaskName_show = m_TaskName_list[0];
+                    m_TaskName_show = "";
                 }
                 // m_TaskName_show = m_TaskName_show.substr(0, m_TextLength);
             }
 
             //文字
-            var m_tasktext_svg = '<text x=' + (m_task_x + 3) + ' y="' + (m_task_y + LINESPACE / 2 + 2) + '" font-size="0.8em"' +
+            var m_tasktext_svg = '<text x=' + (m_task_x + 1) + ' y="' + (m_task_y + LINESPACE / 2 + 1) + '" font-size="0.7em"' +
                 'style="overflow: hidden;width: ' + m_task_width + '">'
                 + m_TaskName_show + '</text>';
             //底色
@@ -302,7 +339,7 @@
     function EnglishConvert(TypeName_en) {
         var TypeName_ch = TypeName_en;
         var Convert = {
-            "FulldiskNormal": "全圆盘常规",
+            "FulldiskNormal": "全圆盘",
             "FulldiskHigh": "全圆盘高灵敏",
             "NorthdiskNormal": "北半球常规",
             "NorthdiskHigh": "北半球高灵敏",
