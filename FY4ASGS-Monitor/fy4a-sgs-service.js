@@ -22,6 +22,7 @@
             }
         };
         //设置数据库连接
+        //mongoose.Promise = global.Promise;
         mongoose.connect(MONGOOSE_URI, opt_Mongoose);
 
         //连接成功
@@ -84,10 +85,13 @@
         require("./routers/timetables.js")(server,BASEPATH);
 
         //分系统性能参数
-        require("./routers/capability.js")(server);
+        require("./routers/capability.js")(server,BASEPATH);
+
+        //3系统下的9个仪器任务显示
+        require("./routers/taskcount.js")(server,BASEPATH);
 
         //1级数据图像获取
-        //require("./routers/lv1fastview.js")(server, BASEPATH);
+        require("./routers/lv1fastview.js")(server, BASEPATH);
 
         server.listen(HTTP_PORT, function () {
             console.log("%s listening at %s", server.name, server.url);
